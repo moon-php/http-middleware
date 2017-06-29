@@ -1,0 +1,27 @@
+{
+  "name": "moon/http-middleware",
+  "require": {
+    "php": ">=7.1",
+    "psr/http-message": "^1.0",
+    "http-interop/http-middleware": "^0.4.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^6.2"
+  },
+  "authors": [
+    {
+      "name": "Damiano Petrungaro",
+      "email": "damianopetrungaro@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Moon\\HttpMiddleware\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Moon\\HttpMiddleware\\Unit\\": "tests/Unit/"
+    }
+  }
+}
