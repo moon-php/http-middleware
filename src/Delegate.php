@@ -16,13 +16,21 @@ class Delegate implements DelegateInterface
      * @var MiddlewareInterface[] $middlewares
      */
     protected $middlewares;
+    /**
+     * @var callable
+     */
+    private $default;
 
-    public function __construct(array $middlewares)
+    /**
+     * Delegate constructor.
+     *
+     * @param array $middlewares
+     * @param callable $default
+     *
+     * @throws InvalidArgumentException
+     */
+    public function __construct(array $middlewares, callable $default)
     {
-        if (empty($middlewares)) {
-            throw new InvalidArgumentException("Middlewares array can't be empty");
-        }
-
         foreach ($middlewares as $middleware) {
             if (!$middleware instanceof MiddlewareInterface) {
                 throw new InvalidArgumentException('All the middlewares must implement ' . MiddlewareInterface::class);
@@ -30,6 +38,7 @@ class Delegate implements DelegateInterface
         }
 
         $this->middlewares = $middlewares;
+        $this->default = $default;
     }
 
     /**
@@ -40,11 +49,11 @@ class Delegate implements DelegateInterface
         /** @var MiddlewareInterface $middleware */
         $middleware = array_shift($this->middlewares);
 
-        $next = null;
-        if (!empty($this->middlewares)) {
-            $next = new self($this->middlewares);
+        // It there's no middleware use the default callable
+        if ($middleware === null) {
+            return call_user_func($this->default, $request);
         }
 
-        return $middleware->process($request, $next);
+        return $middleware->process($request, clone $this);
     }
 }
