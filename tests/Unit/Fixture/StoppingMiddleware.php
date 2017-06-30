@@ -17,7 +17,12 @@ class StoppingMiddleware implements MiddlewareInterface
      */
     private $fakeResponse;
 
-    public function __construct($fakeResponse)
+    /**
+     * StoppingMiddleware constructor.
+     *
+     * @param ResponseInterface $fakeResponse
+     */
+    public function __construct(ResponseInterface $fakeResponse)
     {
         $this->fakeResponse = $fakeResponse;
     }
