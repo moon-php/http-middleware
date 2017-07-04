@@ -5,6 +5,8 @@ A very simple HTTP Middleware implementation
 [![Code Coverage](https://scrutinizer-ci.com/g/moon-php/http-middleware/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/moon-php/http-middleware/?branch=master)
 [![Build Status](https://scrutinizer-ci.com/g/moon-php/http-middleware/badges/build.png?b=master)](https://scrutinizer-ci.com/g/moon-php/http-middleware/build-status/master)
 
+**Accpeted as [awesome psr-15 middleware](https://github.com/middlewares/awesome-psr15-middlewares#packages) package**
+
 ## Documentation
 
 - Delegate
