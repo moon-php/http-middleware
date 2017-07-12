@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moon\HttpMiddleware\Unit;
 
+use Interop\Http\ServerMiddleware\DelegateInterface;
 use Interop\Http\ServerMiddleware\MiddlewareInterface;
 use Moon\HttpMiddleware\Delegate;
 use Moon\HttpMiddleware\Exception\InvalidArgumentException;
@@ -11,19 +12,13 @@ use Moon\HttpMiddleware\Unit\Fixture\PlusOneMiddleware;
 use Moon\HttpMiddleware\Unit\Fixture\PlusTwoMiddleware;
 use Moon\HttpMiddleware\Unit\Fixture\StoppingMiddleware;
 use PHPUnit\Framework\TestCase;
+use Prophecy\Argument;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class DelegateTest extends TestCase
 {
-    public function testInvlidArrayThrowInvalidArgumentException()
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('All the middlewares must implement ' . MiddlewareInterface::class);
-        new Delegate(['invalid object'], function () {
-        });
-    }
-
     public function testDefaultCallbackIsCalledOnEmptyMiddlewareStack()
     {
         $requestMock = $this->prophesize(ServerRequestInterface::class)->reveal();
@@ -66,5 +61,70 @@ class DelegateTest extends TestCase
         });
 
         $this->assertSame($responseMock, $delegate->process($requestMock));
+    }
+
+    public function testInvalidLazyLoadingMiddlewareFromContainer()
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $requestMock = $this->prophesize(ServerRequestInterface::class)->reveal();
+        $containerProphecy = $this->prophesize(ContainerInterface::class);
+        $containerProphecy->has('InvalidMiddleware')->shouldBeCalled(1)->willReturn(true);
+        $containerProphecy->get('InvalidMiddleware')->shouldBeCalled(1)->willReturn(new \SplStack());
+        $containerMock = $containerProphecy->reveal();
+
+        $delegate = new Delegate(['InvalidMiddleware'], function () {
+        }, $containerMock);
+
+        $delegate->process($requestMock);
+    }
+
+    public function testLazyLoadingMiddlewareFromContainer()
+    {
+        $requestMock = $this->prophesize(ServerRequestInterface::class)->reveal();
+        $responseMock = $this->prophesize(ResponseInterface::class)->reveal();
+        $middlewareProphecy = $this->prophesize(MiddlewareInterface::class);
+        $middlewareProphecy->process(
+            Argument::type(ServerRequestInterface::class), Argument::type(DelegateInterface::class)
+        )->shouldBeCalled(1)->willReturn($responseMock);
+        $middlewareMock = $middlewareProphecy->reveal();
+        $containerProphecy = $this->prophesize(ContainerInterface::class);
+        $containerProphecy->has('validMiddleware')->shouldBeCalled(1)->willReturn(true);
+        $containerProphecy->get('validMiddleware')->shouldBeCalled(1)->willReturn($middlewareMock);
+        $containerMock = $containerProphecy->reveal();
+
+        $delegate = new Delegate(['validMiddleware'], function () {
+        }, $containerMock);
+
+        $delegate->process($requestMock);
+    }
+
+    public function testInvalidContainerEntry()
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $requestMock = $this->prophesize(ServerRequestInterface::class)->reveal();
+        $containerProphecy = $this->prophesize(ContainerInterface::class);
+        $containerProphecy->has('InvalidMiddleware')->shouldBeCalled(1)->willReturn(false);
+        $containerProphecy->get('InvalidMiddleware')->shouldNotBeCalled(1);
+        $containerMock = $containerProphecy->reveal();
+
+        $delegate = new Delegate(['InvalidMiddleware'], function () {
+        }, $containerMock);
+
+        $delegate->process($requestMock);
+    }
+
+
+    public function testInvalidMiddlewareAndContainerNotPassed()
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $requestMock = $this->prophesize(ServerRequestInterface::class)->reveal();
+
+        $delegate = new Delegate(['InvalidMiddleware'], function () {
+        });
+
+        $delegate->process($requestMock);
     }
 }
