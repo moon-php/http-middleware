@@ -1,42 +1,36 @@
 # Moon - HTTP Middleware
-A very simple HTTP Middleware implementation
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/moon-php/http-middleware/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/moon-php/http-middleware/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/moon-php/http-middleware/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/moon-php/http-middleware/?branch=master)
 [![Build Status](https://scrutinizer-ci.com/g/moon-php/http-middleware/badges/build.png?b=master)](https://scrutinizer-ci.com/g/moon-php/http-middleware/build-status/master)
-
 **Accpeted as [awesome psr-15 middleware](https://github.com/middlewares/awesome-psr15-middlewares#packages) package**
 
-## Documentation
 
-- Delegate
+### [Documentation](http://moon-php.com/docs/http-middleware/)
 
-- InvalidArgumentException
+## Tests
 
+To execute the test suite, you'll need phpunit.
+_It's a dev-dependency of this package_
 
+```bash
+$ php vendon/bin/phpunit
+```
 
-### Delegate
+## Contributing
 
-__namespace: Moon\HttpMiddleware\Delegate__
+Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
-According to the PSR15 proposal : 
+## Learn More
 
-_The DelegateInterface defines a single method that accepts a request and returns a response._
+Learn more at these links:
 
-_The delegate interface must be implemented by any middleware dispatcher that uses middleware implementing MiddlewareInterface._
+- [Website](http://moon-php.com)
 
-So i decided to make the **Delegate** a **Middleware Dispatcher** itself.
+## Security
 
-The object is really simple, it has a constructor that requires an **array of MiddlewareInterface** implementor and a callable to use as **default** response.
+If you discover security related issues, please email damianopetrungaro@gmail.com instead of using the issue tracker.
 
-The MiddlewareInterface implementor will be directly implemented by the userland and inserted into the array.
+## License
 
-    $request = new ServerRequestImplementor();
-    $delegate = new Delegate([new MiddlewareOne(), new MiddlewareTwo(), new MiddlewareThree()], new DefaultResponse());
-    $delegate->process($request);
-
-### InvalidArgumentException
-
-__namespace Moon\HttpMiddleware\Exception\InvalidArgumentException__
-
-If an object passed into the array is not a MiddlewareInterface implementor and **InvalidArgumentException** will be thrown.
+The Moon Http-Middleware is licensed under the MIT license. See [License File](LICENSE.md) for more information.
