@@ -5,8 +5,9 @@
 [![Build Status](https://scrutinizer-ci.com/g/moon-php/http-middleware/badges/build.png?b=master)](https://scrutinizer-ci.com/g/moon-php/http-middleware/build-status/master)
 **Accpeted as [awesome psr-15 middleware](https://github.com/middlewares/awesome-psr15-middlewares#packages) package**
 
+## Official Documentation
 
-### [Documentation](http://moon-php.com/docs/http-middleware/)
+Documentation can be found on the [Moon website](http://moon-php.com/docs/http-middleware/).
 
 ## Tests
 
@@ -25,7 +26,7 @@ Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 Learn more at these links:
 
-- [Website](http://moon-php.com)
+- [Moon Website](http://www.moon-php.com)
 
 ## Security
 
