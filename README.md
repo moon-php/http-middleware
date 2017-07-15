@@ -7,7 +7,7 @@
 
 ## Official Documentation
 
-Documentation can be found on the [Moon website](http://moon-php.com/docs/http-middleware/).
+Documentation can be found on the [Moon website](http://www.moon-php.com/docs/http-middleware/).
 
 ## Tests
 
