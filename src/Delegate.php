@@ -60,16 +60,13 @@ class Delegate implements DelegateInterface
 
         if (!$this->container instanceof ContainerInterface || !$this->container->has($middleware)) {
             throw new InvalidArgumentException(
-                sprintf('The middleware is not a valid %s and is not passed in the Container', MiddlewareInterface::class));
-        }
-
-        $middleware = $this->container->get($middleware);
-        if (!$middleware instanceof MiddlewareInterface) {
-            throw new InvalidArgumentException(
-                sprintf('The middleware is not a %s implementation', MiddlewareInterface::class)
+                sprintf('The middleware is not a valid %s and is not passed in the Container', MiddlewareInterface::class),
+                $middleware
             );
         }
 
-        return $middleware->process($request, clone $this);
+        array_unshift($this->middlewares, $this->container->get($middleware));
+
+        return $this->process($request);
     }
 }

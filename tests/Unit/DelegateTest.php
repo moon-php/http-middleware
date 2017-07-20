@@ -52,6 +52,36 @@ class DelegateTest extends TestCase
         $delegate->process($firstRequestProphecy->reveal());
     }
 
+    public function testMiddlewareStackIsTraversedUsingContainer()
+    {
+        $firstRequestProphecy = $this->prophesize(ServerRequestInterface::class);
+        $secondRequestProphecy = $this->prophesize(ServerRequestInterface::class);
+        $thirdRequestMock = $this->prophesize(ServerRequestInterface::class)->reveal();
+
+        $secondRequestProphecy->getAttribute('total')->shouldBeCalled(1)->willReturn(2);
+        $secondRequestProphecy->withAttribute('total', 4)->shouldBeCalled(1)->willReturn($thirdRequestMock);
+
+        $firstRequestProphecy->getAttribute('total')->shouldBeCalled(1)->willReturn(1);
+        $firstRequestProphecy->withAttribute('total', 2)->shouldBeCalled(1)->willReturn($secondRequestProphecy->reveal());
+
+        $responseMock = $this->createMock(ResponseInterface::class);
+        $assertion = function (ServerRequestInterface $request) use ($thirdRequestMock, $responseMock) {
+            $this->assertSame($thirdRequestMock, $request);
+            return $responseMock;
+        };
+
+        $containerProphecy = $this->prophesize(ContainerInterface::class);
+        $containerProphecy->has('one')->shouldBeCalled(1)->willReturn(true);
+        $containerProphecy->has('two')->shouldBeCalled(1)->willReturn(true);
+        $containerProphecy->get('one')->shouldBeCalled(1)->willReturn(new PlusOneMiddleware());
+        $containerProphecy->get('two')->shouldBeCalled(1)->willReturn(new PlusTwoMiddleware());
+        $containerMock = $containerProphecy->reveal();
+
+
+        $delegate = new Delegate(['one', 'two'], $assertion, $containerMock);
+        $delegate->process($firstRequestProphecy->reveal());
+    }
+
     public function testMiddlewareStackStop()
     {
         $requestMock = $this->prophesize(ServerRequestInterface::class)->reveal();
@@ -63,20 +93,26 @@ class DelegateTest extends TestCase
         $this->assertSame($responseMock, $delegate->process($requestMock));
     }
 
-    public function testInvalidLazyLoadingMiddlewareFromContainer()
+    public function testInvalidMiddlewareisPassedToInvalidArgumentException()
     {
         $this->expectException(InvalidArgumentException::class);
-
+        $invalidMiddleware = new \SplStack();
         $requestMock = $this->prophesize(ServerRequestInterface::class)->reveal();
         $containerProphecy = $this->prophesize(ContainerInterface::class);
         $containerProphecy->has('InvalidMiddleware')->shouldBeCalled(1)->willReturn(true);
-        $containerProphecy->get('InvalidMiddleware')->shouldBeCalled(1)->willReturn(new \SplStack());
+        $containerProphecy->has(Argument::any())->shouldBeCalled(2)->willReturn(false);
+        $containerProphecy->get('InvalidMiddleware')->shouldBeCalled(1)->willReturn($invalidMiddleware);
         $containerMock = $containerProphecy->reveal();
 
         $delegate = new Delegate(['InvalidMiddleware'], function () {
         }, $containerMock);
 
-        $delegate->process($requestMock);
+        try {
+            $delegate->process($requestMock);
+        } catch (InvalidArgumentException $e) {
+            $this->assertSame($e->getInvalidMiddleware(), $invalidMiddleware);
+            throw $e;
+        }
     }
 
     public function testLazyLoadingMiddlewareFromContainer()

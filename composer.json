@@ -1,5 +1,8 @@
 {
   "name": "moon-php/http-middleware",
+  "description": "Http-Middleware supporting PSR-15",
+  "license": "MIT",
+  "homepage": "https://www.moon-php.com/",
   "require": {
     "php": ">=7.1",
     "psr/http-message": "^1.0",
