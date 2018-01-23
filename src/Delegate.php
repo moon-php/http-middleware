@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moon\HttpMiddleware;
 
-use Interop\Http\ServerMiddleware\DelegateInterface;
-use Interop\Http\ServerMiddleware\MiddlewareInterface;
 use Moon\HttpMiddleware\Exception\InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
-class Delegate implements DelegateInterface
+class Delegate implements RequestHandlerInterface
 {
     /**
      * @var string[]|MiddlewareInterface[]|mixed $middlewares
@@ -44,7 +44,7 @@ class Delegate implements DelegateInterface
      * {@inheritdoc}
      * @throws \Moon\HttpMiddleware\Exception\InvalidArgumentException
      */
-    public function process(ServerRequestInterface $request): ResponseInterface
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $middleware = array_shift($this->middlewares);
 
@@ -67,6 +67,6 @@ class Delegate implements DelegateInterface
 
         array_unshift($this->middlewares, $this->container->get($middleware));
 
-        return $this->process($request);
+        return $this->handle($request);
     }
 }
