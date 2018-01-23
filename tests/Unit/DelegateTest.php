@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Moon\HttpMiddleware\Unit;
 
-use Interop\Http\ServerMiddleware\DelegateInterface;
-use Interop\Http\ServerMiddleware\MiddlewareInterface;
 use Moon\HttpMiddleware\Delegate;
 use Moon\HttpMiddleware\Exception\InvalidArgumentException;
 use Moon\HttpMiddleware\Unit\Fixture\PlusOneMiddleware;
@@ -16,6 +14,8 @@ use Prophecy\Argument;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 class DelegateTest extends TestCase
 {
@@ -27,7 +27,7 @@ class DelegateTest extends TestCase
             return $responseMock;
         });
 
-        $this->assertSame($delegate->process($requestMock), $responseMock);
+        $this->assertSame($delegate->handle($requestMock), $responseMock);
     }
 
     public function testMiddlewareStackIsTraversed()
@@ -49,7 +49,7 @@ class DelegateTest extends TestCase
         };
 
         $delegate = new Delegate([new PlusOneMiddleware(), new PlusTwoMiddleware()], $assertion);
-        $delegate->process($firstRequestProphecy->reveal());
+        $delegate->handle($firstRequestProphecy->reveal());
     }
 
     public function testMiddlewareStackIsTraversedUsingContainer()
@@ -79,7 +79,7 @@ class DelegateTest extends TestCase
 
 
         $delegate = new Delegate(['one', 'two'], $assertion, $containerMock);
-        $delegate->process($firstRequestProphecy->reveal());
+        $delegate->handle($firstRequestProphecy->reveal());
     }
 
     public function testMiddlewareStackStop()
@@ -90,7 +90,7 @@ class DelegateTest extends TestCase
         $delegate = new Delegate([new StoppingMiddleware($responseMock)], function () {
         });
 
-        $this->assertSame($responseMock, $delegate->process($requestMock));
+        $this->assertSame($responseMock, $delegate->handle($requestMock));
     }
 
     public function testInvalidMiddlewareisPassedToInvalidArgumentException()
@@ -108,7 +108,7 @@ class DelegateTest extends TestCase
         }, $containerMock);
 
         try {
-            $delegate->process($requestMock);
+            $delegate->handle($requestMock);
         } catch (InvalidArgumentException $e) {
             $this->assertSame($e->getInvalidMiddleware(), $invalidMiddleware);
             throw $e;
@@ -121,7 +121,7 @@ class DelegateTest extends TestCase
         $responseMock = $this->prophesize(ResponseInterface::class)->reveal();
         $middlewareProphecy = $this->prophesize(MiddlewareInterface::class);
         $middlewareProphecy->process(
-            Argument::type(ServerRequestInterface::class), Argument::type(DelegateInterface::class)
+            Argument::type(ServerRequestInterface::class), Argument::type(RequestHandlerInterface::class)
         )->shouldBeCalled(1)->willReturn($responseMock);
         $middlewareMock = $middlewareProphecy->reveal();
         $containerProphecy = $this->prophesize(ContainerInterface::class);
@@ -132,7 +132,7 @@ class DelegateTest extends TestCase
         $delegate = new Delegate(['validMiddleware'], function () {
         }, $containerMock);
 
-        $delegate->process($requestMock);
+        $delegate->handle($requestMock);
     }
 
     public function testInvalidContainerEntry()
@@ -148,7 +148,7 @@ class DelegateTest extends TestCase
         $delegate = new Delegate(['InvalidMiddleware'], function () {
         }, $containerMock);
 
-        $delegate->process($requestMock);
+        $delegate->handle($requestMock);
     }
 
 
@@ -161,6 +161,6 @@ class DelegateTest extends TestCase
         $delegate = new Delegate(['InvalidMiddleware'], function () {
         });
 
-        $delegate->process($requestMock);
+        $delegate->handle($requestMock);
     }
 }
