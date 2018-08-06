@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+  http-middleware:
+    build: .
+    volumes:
+      - ./:/moon

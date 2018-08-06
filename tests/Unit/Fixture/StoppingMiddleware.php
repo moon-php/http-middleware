@@ -12,7 +12,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 class StoppingMiddleware implements MiddlewareInterface
 {
     /**
-     * @var ResponseInterface $fakeResponse
+     * @var ResponseInterface
      */
     private $fakeResponse;
 
