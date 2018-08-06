@@ -1,9 +1,9 @@
 # Moon - HTTP Middleware
 
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/moon-php/http-middleware/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/moon-php/http-middleware/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/moon-php/http-middleware/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/moon-php/http-middleware/?branch=master)
-[![Build Status](https://scrutinizer-ci.com/g/moon-php/http-middleware/badges/build.png?b=master)](https://scrutinizer-ci.com/g/moon-php/http-middleware/build-status/master)
-**Accpeted as [awesome psr-15 middleware](https://github.com/middlewares/awesome-psr15-middlewares#packages) package**
+[![Coverage Status](https://coveralls.io/repos/github/moon-php/http-middleware/badge.svg)](https://coveralls.io/github/moon-php/http-middleware)
+[![Build Status](https://travis-ci.org/moon-php/http-middleware.svg?branch=master)](https://travis-ci.org/moon-php/http-middleware)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
+[![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat)](https://github.com/phpstan/phpstan)
 
 ## Official Documentation
 
@@ -34,4 +34,4 @@ If you discover security related issues, please email damianopetrungaro@gmail.co
 
 ## License
 
-The Moon Http-Middleware is licensed under the MIT license. See [License File](LICENSE.md) for more information.
+The Moon Http-Middleware is licensed under the MIT license. See [License File](LICENSE) for more information.

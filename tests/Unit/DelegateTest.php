@@ -45,6 +45,7 @@ class DelegateTest extends TestCase
         $responseMock = $this->createMock(ResponseInterface::class);
         $assertion = function (ServerRequestInterface $request) use ($thirdRequestMock, $responseMock) {
             $this->assertSame($thirdRequestMock, $request);
+
             return $responseMock;
         };
 
@@ -67,6 +68,7 @@ class DelegateTest extends TestCase
         $responseMock = $this->createMock(ResponseInterface::class);
         $assertion = function (ServerRequestInterface $request) use ($thirdRequestMock, $responseMock) {
             $this->assertSame($thirdRequestMock, $request);
+
             return $responseMock;
         };
 
@@ -76,7 +78,6 @@ class DelegateTest extends TestCase
         $containerProphecy->get('one')->shouldBeCalled(1)->willReturn(new PlusOneMiddleware());
         $containerProphecy->get('two')->shouldBeCalled(1)->willReturn(new PlusTwoMiddleware());
         $containerMock = $containerProphecy->reveal();
-
 
         $delegate = new Delegate(['one', 'two'], $assertion, $containerMock);
         $delegate->handle($firstRequestProphecy->reveal());
@@ -150,7 +151,6 @@ class DelegateTest extends TestCase
 
         $delegate->handle($requestMock);
     }
-
 
     public function testInvalidMiddlewareAndContainerNotPassed()
     {
