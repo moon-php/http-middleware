@@ -50,10 +50,7 @@ class Delegate implements RequestHandlerInterface
         }
 
         if (!$this->container instanceof ContainerInterface || !$this->container->has($middleware)) {
-            throw new InvalidArgumentException(
-                \sprintf('The middleware is not a valid %s and is not passed in the Container', MiddlewareInterface::class),
-                $middleware
-            );
+            throw new InvalidArgumentException($middleware);
         }
 
         \array_unshift($this->middlewares, $this->container->get($middleware));
